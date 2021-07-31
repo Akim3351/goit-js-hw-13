@@ -16,18 +16,24 @@
     <section class="query-wrapper">
       <div class="query-block">
         <form class="search-form" id="search-form">
-          <input
+          <input class="search-input"
             type="text"
             name="searchQuery"
             autocomplete="off"
             placeholder="Search images..."
+            id="search-input"
           />
           <button type="submit">Search</button>
         </form>
       </div>
     </section>
-    <section class="result-wrapper">
-      <div class="result-block"></div>
+    <section class="gallery-wrapper">
+      <div class="gallery">
+          <!-- Карточки изображений -->
+      </div>
+      <div class="show-more-wrapper">
+        <button class="show-more hidden" id="show-more-btn">Load more</button>
+      </div>
     </section>
     <!-- Скрипт идёт последним в разметке. В нём уже подключен главный SASS-файл. -->
     <script src="./index.js"></script>
