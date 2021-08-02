@@ -3,10 +3,14 @@ import ImageSearch from './js/pic-fetch';
 import Notiflix from "notiflix";
 import Axios from "axios";
 import SimpleLightbox from 'simplelightbox';
+import debounce from 'lodash.debounce';
 import 'simplelightbox/dist/simple-lightbox.css';
 import imageCardTpl from './templates/image-card.hbs';
 import imageModalTpl from './templates/image-modal.hbs';
 import './js/lightbox';
+
+
+const DEBOUNCE_DELAY = 1000;
 
 const imageSearch = new ImageSearch();
 
@@ -14,11 +18,11 @@ const refs = {
     searchForm: document.getElementById('search-form'),
     searchInput: document.getElementById('search-input'),
     gallery: document.querySelector('.gallery'),
-    loadMoreBtn: document.getElementById('show-more-btn'),
 };
+
 let lightbox = new SimpleLightbox('.gallery a');
-refs.searchForm.addEventListener('submit', onFormSubmit)
-refs.loadMoreBtn.addEventListener('click', onLoadMore)
+refs.searchForm.addEventListener('submit', onFormSubmit);
+window.addEventListener('scroll', debounce(onLoadMore, DEBOUNCE_DELAY));
 
 async function onFormSubmit (el) {
     el.preventDefault();
@@ -36,7 +40,6 @@ async function onFormSubmit (el) {
         const res = await imageSearch.fetchImages();
 
         if (res.hits.length === 0) {
-            refs.loadMoreBtn.classList.add('hidden')
                 Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
                 return;
             };
@@ -44,7 +47,6 @@ async function onFormSubmit (el) {
         appendMarkup(res.hits);
         Notiflix.Notify.success(`Hooray! We found ${res.totalHits} images.`);
         lightbox.refresh();
-        refs.loadMoreBtn.classList.remove('hidden');
             
     
         } catch (error) {
@@ -58,14 +60,11 @@ async function onLoadMore() {
         const res = await imageSearch.fetchImages();
      
         if (refs.gallery.querySelectorAll('.image-card').length === res.totalHits) {
-            refs.loadMoreBtn.classList.add('hidden');
             Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
 
         } else {
-
         appendMarkup(res.hits);
         lightbox.refresh();
-
         }
       
     } catch (error) {
@@ -73,9 +72,6 @@ async function onLoadMore() {
     }
 }
 
-async function onImageClick () {
-    console.log('click on image')
-}
 
 function resetPageCount() {
     imageSearch.resetPage();
